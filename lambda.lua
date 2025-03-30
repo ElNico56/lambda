@@ -1,9 +1,9 @@
 -- lambda.lua
 
 
+require"lib.defs"
 local reduce = require"lib.eval"
 local stringify = require"lib.fmt"
-require"lib.defs"
 
 
 local expr
@@ -24,14 +24,14 @@ while true do -- REPL loop
 	elseif line == "r" then -- reduce all
 		local i = 0
 		while true do
-			local nextexpr, reduced = reduce(expr, handedness)
+			local nextExpr, reduced = reduce(expr, handedness)
 			if not reduced or i > 1200 then
 				break
 			end
 			i = i + 1
 			print(stringify(expr, "\\", false, true))
 			table.insert(hist, expr)
-			expr = nextexpr
+			expr = nextExpr
 		end
 		print(stringify(expr, "\\", false, true))
 		table.insert(hist, expr)
@@ -52,11 +52,11 @@ while true do -- REPL loop
 	elseif line:match"^!" then -- execute
 		load(line:sub(2))()
 	else                    -- reduce once
-		local nextexpr, reduced = reduce(expr, handedness)
+		local nextExpr, reduced = reduce(expr, handedness)
 		print(stringify(expr, "\\", false, true))
 		if reduced then
 			table.insert(hist, expr)
-			expr = nextexpr
+			expr = nextExpr
 		end
 	end
 end

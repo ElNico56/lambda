@@ -44,7 +44,7 @@ local function _str(expr, depth)
 	end
 end
 
-local function color_letter(letter)
+local function colorLetter(letter)
 	local value = byte(letter) - byte"a"
 	return hsvANSI(intPart(value), .5, .9)..letter.."\x1b[0m"
 	-- return hsvANSI(value / 12, .5, .9)..letter.."\x1b[0m"
@@ -66,7 +66,7 @@ local function stringify(expr, lambda, group, color)
 	end
 	str = str:gsub("\xff", lambda)
 	if color then
-		return (str:gsub("[a-z]", color_letter))
+		return (str:gsub("[a-z]", colorLetter))
 	end
 	return str
 end

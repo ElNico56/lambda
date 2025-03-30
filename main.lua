@@ -4,10 +4,10 @@
 local rl = rl ---@diagnostic disable-line undefined-global
 
 
+require"lib.defs"
 local reduce = require"lib.eval"
 local render = require"lib.render"
 local stringify = require"lib.fmt"
-require"lib.defs"
 
 
 local expr

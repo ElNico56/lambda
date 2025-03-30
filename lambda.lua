@@ -29,31 +29,35 @@ while true do -- REPL loop
 				break
 			end
 			i = i + 1
-			print(stringify(expr, "\\", false, true))
+			print(stringify(expr, "\\", true, false, true))
 			table.insert(hist, expr)
 			expr = nextExpr
 		end
-		print(stringify(expr, "\\", false, true))
+		print(stringify(expr, "\\", true, false, true))
 		table.insert(hist, expr)
 	elseif line == "z" then -- undo
-		print(stringify(expr, "\\", false, true))
+		print(stringify(expr, "\\", true, false, true))
 		expr = table.remove(hist) or expr
 	elseif line == "h" then -- history
 		for i, e in ipairs(hist) do
-			print(i..": "..stringify(e, "\\", false, true))
+			print(i..": "..stringify(e, "\\", true, false, true))
 		end
 	elseif line:match"^p" then -- print
-		print(stringify(expr, line:sub(2), false, true))
+		local lambda = line:sub(2, 2)
+		local color = line:sub(3, 3) == "t"
+		local group = line:sub(4, 4) == "t"
+		local numbers = line:sub(5, 5) == "t"
+		print(stringify(expr, lambda, color, group, numbers))
 	elseif line:match"^=" then -- set expression
 		local code = ("return(%s)"):format(line:sub(2))
 		expr = load(code)()
 		hist = {}
-		print(stringify(expr, "\\", false, true))
+		print(stringify(expr, "\\", true, false, true))
 	elseif line:match"^!" then -- execute
 		load(line:sub(2))()
 	else                    -- reduce once
 		local nextExpr, reduced = reduce(expr, handedness)
-		print(stringify(expr, "\\", false, true))
+		print(stringify(expr, "\\", true, false, true))
 		if reduced then
 			table.insert(hist, expr)
 			expr = nextExpr

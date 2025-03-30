@@ -25,23 +25,40 @@ local function intPart(x)
 	return ret
 end
 
+local nums = {}
 
-local function _str(expr, depth)
+local function _tonum(str)
+	for i, n in pairs(nums) do
+		if str == n then
+			return "#"..i
+		end
+	end
+	return false
+end
+
+local function _str(expr, depth, numbers)
 	if not expr then return "NIL" end
 	if depth > 20 then return "!!!" end
 	if type(expr) == "table" then
 		if #expr == 1 then
 			local v = char(depth % 26 + 97)
-			local a = _str(expr[1], depth + 1)
+			local a = _str(expr[1], depth + 1, numbers)
 			if a:match"^%b()$" then a = a:sub(2, -2) end
-			return ('(\xff%s.%s)'):format(v, a)
+			local ret = ('(\xff%s.%s)'):format(v, a)
+			return numbers and _tonum(_str(expr, 0, false)) or ret
 		end
-		local left = _str(expr[1], depth)
-		local right = _str(expr[2], depth)
+		local left = _str(expr[1], depth, numbers)
+		local right = _str(expr[2], depth, numbers)
+		left = numbers and _tonum(_str(expr[1], 0, false)) or left
+		right = numbers and _tonum(_str(expr[2], 0, false)) or right
 		return ("(%s%s)"):format(left, right)
 	else
 		return char((depth - expr) % 26 + 97)
 	end
+end
+
+for i = 0, 99 do
+	nums[i] = _str(N(i), 0, false)
 end
 
 local function colorLetter(letter)
@@ -50,14 +67,20 @@ local function colorLetter(letter)
 	-- return hsvANSI(value / 12, .5, .9)..letter.."\x1b[0m"
 end
 
+local function colorNumber(num)
+	return hsvANSI(intPart(tonumber(num:sub(2))), .5, .9)..num.."\x1b[0m"
+	-- return hsvANSI(tonumber(num:sub(2)) / 12, .5, .9)..num.."\x1b[0m"
+end
+
 ---@param expr table|number @expression to stringify
 ---@param lambda string|nil @prefix for abstractions
----@param group boolean|nil @whether to group abstraction variables
 ---@param color boolean|nil @whether to colorize the output
+---@param group boolean|nil @whether to group abstraction variables
+---@param numbers boolean|nil @whether to detect church numerals
 ---@return string
-local function stringify(expr, lambda, group, color)
+local function stringify(expr, lambda, color, group, numbers)
 	lambda = lambda or "@"
-	local str = _str(expr, 0)
+	local str = _str(expr, 0, numbers)
 	if str:match"^%b()$" then str = str:sub(2, -2) end
 	while group and str ~= str:gsub("([a-z])%.\xff([a-z])", "%1%2") do
 		-- group abstraction variables
@@ -66,7 +89,7 @@ local function stringify(expr, lambda, group, color)
 	end
 	str = str:gsub("\xff", lambda)
 	if color then
-		return (str:gsub("[a-z]", colorLetter))
+		return (str:gsub("%l", colorLetter):gsub("#%d+", colorNumber))
 	end
 	return str
 end

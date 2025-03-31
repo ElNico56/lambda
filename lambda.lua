@@ -28,11 +28,8 @@ while true do -- REPL loop
 	elseif line == "r" then -- reduce all
 		local i = 0
 		while true do
-			local nextExpr, reduced = reduce(expr, handedness)
-			if not reduced or i > 1200 then
-				break
-			end
-			if stringify(expr) == stringify(nextExpr) then
+			local nextExpr, _ = reduce(expr, handedness)
+			if stringify(expr) == stringify(nextExpr) or i > 1200 then
 				break
 			end
 			i = i + 1

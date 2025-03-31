@@ -25,7 +25,17 @@ local function intPart(x)
 	return ret
 end
 
+local nums = {}
 local aliases = {}
+
+local function _tonum(str)
+	for i, n in pairs(nums) do
+		if str == n then
+			return "#"..i
+		end
+	end
+	return false
+end
 
 local function _toalias(str)
 	for s, v in pairs(aliases) do
@@ -45,10 +55,14 @@ local function _str(expr, depth, alias)
 			local a = _str(expr[1], depth + 1, alias)
 			if a:match"^%b()$" then a = a:sub(2, -2) end
 			local ret = ('(\xff%s.%s)'):format(v, a)
-			return alias and _toalias(_str(expr, 0, false)) or ret
+			ret = alias and _tonum(_str(expr, 0, false)) or ret
+			ret = alias and _toalias(_str(expr, 0, false)) or ret
+			return ret
 		end
 		local left = _str(expr[1], depth, alias)
 		local right = _str(expr[2], depth, alias)
+		left = alias and _tonum(_str(expr[1], 0, false)) or left
+		right = alias and _tonum(_str(expr[2], 0, false)) or right
 		left = alias and _toalias(_str(expr[1], 0, false)) or left
 		right = alias and _toalias(_str(expr[2], 0, false)) or right
 		return ("(%s%s)"):format(left, right)
@@ -60,7 +74,7 @@ end
 aliases[_str(T, 0, false)] = "T"
 aliases[_str(F, 0, false)] = "F"
 for i = 1, 100 do
-	aliases[_str(N(i), 0, false)] = "#"..i
+	nums[i] = _str(N(i), 0, false)
 end
 
 local function colorLetter(letter)
@@ -68,21 +82,18 @@ local function colorLetter(letter)
 	return hsvANSI(intPart(value), .5, .9)..letter.."\x1b[0m"
 end
 
-local function _color(alias)
-	if alias:match"^#" then
-		return hsvANSI(intPart(tonumber(alias:sub(2))), .5, .9)..alias.."\x1b[0m"
-	elseif alias == "T" then
-		return hsvANSI(.33, .8, .9).."T\x1b[0m"
-	elseif alias == "F" then
-		return hsvANSI(.00, .8, .9).."F\x1b[0m"
-	end
+local function colorNumber(num)
+	return hsvANSI(intPart(tonumber(num:sub(2))), .5, .9)..num.."\x1b[0m"
 end
 
-local function colorAlias(str)
-	for _, v in pairs(aliases) do
-		str = str:gsub(v, _color(v))
+local function colorAlias(alias)
+	if alias == "T" then
+		return hsvANSI(.33, .8, .9)..alias.."\x1b[0m"
+	elseif alias == "F" then
+		return hsvANSI(.00, .8, .9)..alias.."\x1b[0m"
+	else
+		return hsvANSI(0, 0, 1)..alias.."\x1b[0m"
 	end
-	return str
 end
 
 ---@param expr table|number @expression to stringify
@@ -102,7 +113,12 @@ local function stringify(expr, lambda, color, group, alias)
 	end
 	str = str:gsub("\xff", lambda)
 	if color then
-		return colorAlias(str:gsub("%l", colorLetter))
+		str = str:gsub("%l", colorLetter)
+		str = str:gsub("#%d+", colorNumber)
+		for _, pattern in pairs(aliases) do
+			str = str:gsub(pattern, colorAlias)
+		end
+		return str
 	end
 	return str
 end

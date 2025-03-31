@@ -9,3 +9,5 @@
 `lib/fmt.lua` has lambda calculus pretty printer.
 
 `lib/render.lua` has raylib tromp diagram renderer.
+
+originally forked from [this love2d impl](https://github.com/BlueMoonJune/lambdacalc)

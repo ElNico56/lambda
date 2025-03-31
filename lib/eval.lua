@@ -1,8 +1,7 @@
 -- eval.lua
 
 
-local incFree
-incFree = function(expr, value, depth)
+local function incFree(expr, value, depth)
 	if type(expr) == "table" and #expr == 1 then
 		-- if abstraction
 		depth = depth or 0
@@ -22,8 +21,7 @@ incFree = function(expr, value, depth)
 end
 
 
-local substitute
-substitute = function(expr, value, depth)
+local function substitute(expr, value, depth)
 	if type(expr) == "table" and #expr == 1 then
 		-- if abstraction
 		if depth then
@@ -49,12 +47,11 @@ substitute = function(expr, value, depth)
 end
 
 
-local reduce
 ---@param expr table|number
 ---@param handedness boolean
 ---@return table|number reduced_expr
 ---@return boolean reduced
-reduce = function(expr, handedness)
+local function reduce(expr, handedness)
 	if type(expr) == "table" and #expr == 1 then
 		-- if abstraction
 		local res, s = reduce(expr[1], handedness)

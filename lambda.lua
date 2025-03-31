@@ -13,7 +13,7 @@ local hist = {}
 
 -- Main game loop
 local handedness = true
-local lambda = "λ"
+local lambda = "\\"
 local color = true
 local group = false
 local numbers = true
@@ -50,7 +50,7 @@ while true do -- REPL loop
 			print(i..": "..stringify(e, lambda, color, group, numbers))
 		end
 	elseif line:match"^c" then -- config
-		lambda = line:sub(2, 2)
+		lambda = line:sub(2, 2) == " " and "" or line:sub(2, 2)
 		color = line:sub(3, 3) == "t"
 		group = line:sub(4, 4) == "t"
 		numbers = line:sub(5, 5) == "t"

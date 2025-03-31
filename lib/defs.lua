@@ -13,22 +13,19 @@ function N(n)
 	return {{_num(n)}}
 end
 
-function L(a, b)
-	if b then
-		return {{a, b}}
-	end
-	return {a}
+function L(e)
+	return {e}
 end
 
 -- Combinator Birds
 
-M    = L(1, 1)                 -- Mockingbird
-S    = L(L(L({3, 1}, {2, 1}))) -- Starling
+M    = L{1, 1}                 -- Mockingbird
+S    = L(L(L{{3, 1}, {2, 1}})) -- Starling
 K    = L(L(2))                 -- Kestrel
 KI   = L(L(1))                 -- Kite
 I    = L(1)                    -- Idiot
-O    = L(L(1, {2, 1}))         -- Owl
-Y    = L(L(2, {1, 1}), L(2, {1, 1}))
+O    = L(L{1, {2, 1}})         -- Owl
+Y    = L{L{2, {1, 1}}, L{2, {1, 1}}}
 
 -- M   = {{1, 1}}               -- Mockingbird
 -- S   = {{{{{3, 1}, {2, 1}}}}} -- Starling

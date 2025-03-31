@@ -25,62 +25,75 @@ local function intPart(x)
 	return ret
 end
 
-local nums = {}
+local aliases = {}
 
-local function _tonum(str)
-	for i, n in pairs(nums) do
-		if str == n then
-			return "#"..i
+local function _toalias(str)
+	for s, v in pairs(aliases) do
+		if str == s then
+			return v
 		end
 	end
 	return false
 end
 
-local function _str(expr, depth, numbers)
+local function _str(expr, depth, alias)
 	if not expr then return "NIL" end
 	if depth > 20 then return "!!!" end
 	if type(expr) == "table" then
 		if #expr == 1 then
 			local v = char(depth % 26 + 97)
-			local a = _str(expr[1], depth + 1, numbers)
+			local a = _str(expr[1], depth + 1, alias)
 			if a:match"^%b()$" then a = a:sub(2, -2) end
 			local ret = ('(\xff%s.%s)'):format(v, a)
-			return numbers and _tonum(_str(expr, 0, false)) or ret
+			return alias and _toalias(_str(expr, 0, false)) or ret
 		end
-		local left = _str(expr[1], depth, numbers)
-		local right = _str(expr[2], depth, numbers)
-		left = numbers and _tonum(_str(expr[1], 0, false)) or left
-		right = numbers and _tonum(_str(expr[2], 0, false)) or right
+		local left = _str(expr[1], depth, alias)
+		local right = _str(expr[2], depth, alias)
+		left = alias and _toalias(_str(expr[1], 0, false)) or left
+		right = alias and _toalias(_str(expr[2], 0, false)) or right
 		return ("(%s%s)"):format(left, right)
 	else
 		return char((depth - expr) % 26 + 97)
 	end
 end
 
-for i = 0, 99 do
-	nums[i] = _str(N(i), 0, false)
+aliases[_str(T, 0, false)] = "T"
+aliases[_str(F, 0, false)] = "F"
+for i = 1, 100 do
+	aliases[_str(N(i), 0, false)] = "#"..i
 end
 
 local function colorLetter(letter)
 	local value = byte(letter) - byte"a"
 	return hsvANSI(intPart(value), .5, .9)..letter.."\x1b[0m"
-	-- return hsvANSI(value / 12, .5, .9)..letter.."\x1b[0m"
 end
 
-local function colorNumber(num)
-	return hsvANSI(intPart(tonumber(num:sub(2))), .5, .9)..num.."\x1b[0m"
-	-- return hsvANSI(tonumber(num:sub(2)) / 12, .5, .9)..num.."\x1b[0m"
+local function _color(alias)
+	if alias:match"^#" then
+		return hsvANSI(intPart(tonumber(alias:sub(2))), .5, .9)..alias.."\x1b[0m"
+	elseif alias == "T" then
+		return hsvANSI(.33, .8, .9).."T\x1b[0m"
+	elseif alias == "F" then
+		return hsvANSI(.00, .8, .9).."F\x1b[0m"
+	end
+end
+
+local function colorAlias(str)
+	for _, v in pairs(aliases) do
+		str = str:gsub(v, _color(v))
+	end
+	return str
 end
 
 ---@param expr table|number @expression to stringify
 ---@param lambda string|nil @prefix for abstractions
 ---@param color boolean|nil @whether to colorize the output
 ---@param group boolean|nil @whether to group abstraction variables
----@param numbers boolean|nil @whether to detect church numerals
+---@param alias boolean|nil @whether to detect church numerals
 ---@return string
-local function stringify(expr, lambda, color, group, numbers)
+local function stringify(expr, lambda, color, group, alias)
 	lambda = lambda or "@"
-	local str = _str(expr, 0, numbers)
+	local str = _str(expr, 0, alias)
 	if str:match"^%b()$" then str = str:sub(2, -2) end
 	while group and str ~= str:gsub("([a-z])%.\xff([a-z])", "%1%2") do
 		-- group abstraction variables
@@ -89,7 +102,7 @@ local function stringify(expr, lambda, color, group, numbers)
 	end
 	str = str:gsub("\xff", lambda)
 	if color then
-		return (str:gsub("%l", colorLetter):gsub("#%d+", colorNumber))
+		return colorAlias(str:gsub("%l", colorLetter))
 	end
 	return str
 end

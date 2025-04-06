@@ -27,7 +27,8 @@ local hist = {}
 local screenWidth = 1280
 local screenHeight = 720
 
-rl.SetConfigFlags(rl.FLAG_VSYNC_HINT)
+rl.SetConfigFlags(rl.FLAG_VSYNC_HINT + rl.FLAG_WINDOW_RESIZABLE)
+rl.SetTraceLogLevel(rl.LOG_WARNING)
 rl.InitWindow(screenWidth, screenHeight, "Tromp diagram renderer")
 
 -- Load bunny texture
@@ -41,7 +42,7 @@ while not rl.WindowShouldClose() do
 	end
 	if rl.IsMouseButtonPressed(rl.MOUSE_BUTTON_LEFT) then
 		local nextexpr, reduced = reduce(expr, handedness)
-		print(stringify(expr, "\\", false, true))
+		print(stringify(expr, "\\", true))
 		if reduced then
 			table.insert(hist, expr)
 			expr = nextexpr

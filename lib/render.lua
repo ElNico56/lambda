@@ -18,10 +18,6 @@ local function computeSize(expr)
 	end
 end
 
-local function drawSquare(x, y, s, color)
-	rl.DrawRectangle(x * s, y * s, s, s, color)
-end
-
 ---@param expr table|number
 ---@param x number
 ---@param y number

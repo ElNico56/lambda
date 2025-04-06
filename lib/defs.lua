@@ -2,7 +2,7 @@
 
 
 local function _num(n)
-	if n == 0 then
+	if n < 0 then
 		return 1
 	end
 	return {2, _num(n - 1)}
@@ -13,27 +13,15 @@ function N(n)
 	return {{_num(n)}}
 end
 
-function L(e)
-	return {e}
-end
-
 -- Combinator Birds
 
-M    = L{1, 1}                 -- Mockingbird
-S    = L(L(L{{3, 1}, {2, 1}})) -- Starling
-K    = L(L(2))                 -- Kestrel
-KI   = L(L(1))                 -- Kite
-I    = L(1)                    -- Idiot
-O    = L(L{1, {2, 1}})         -- Owl
-Y    = L{L{2, {1, 1}}, L{2, {1, 1}}}
-
--- M   = {{1, 1}}               -- Mockingbird
--- S   = {{{{{3, 1}, {2, 1}}}}} -- Starling
--- K   = {{2}}                  -- Kestrel
--- KI  = {{1}}                  -- Kite
--- I   = {1}                    -- Idiot
--- O   = {{{1, {2, 1}}}}        -- Owl
--- Y   = {{{{2, {1, 1}}}, {{2, {1, 1}}}}}
+M    = {{1, 1}}               -- Mockingbird
+S    = {{{{{3, 1}, {2, 1}}}}} -- Starling
+K    = {{2}}                  -- Kestrel
+KI   = {{1}}                  -- Kite
+I    = {1}                    -- Idiot
+O    = {{{1, {2, 1}}}}        -- Owl
+Y    = {{{{2, {1, 1}}}, {{2, {1, 1}}}}}
 
 -- Arithmetic
 

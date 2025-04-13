@@ -31,8 +31,6 @@ rl.SetConfigFlags(rl.FLAG_VSYNC_HINT + rl.FLAG_WINDOW_RESIZABLE)
 rl.SetTraceLogLevel(rl.LOG_WARNING)
 rl.InitWindow(screenWidth, screenHeight, "Tromp diagram renderer")
 
--- Load bunny texture
-
 -- Main game loop
 local handedness = true
 while not rl.WindowShouldClose() do

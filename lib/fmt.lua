@@ -13,7 +13,7 @@ local function hsvANSI(h, s, v)
 	local g = (1 + s * (min(max(abs((h + 4) % 6 - 3) - 1, 0), 1) - 1)) * v
 	local b = (1 + s * (min(max(abs((h + 2) % 6 - 3) - 1, 0), 1) - 1)) * v
 
-	r, g, b = math.floor(r * 255), math.floor(g * 255), math.floor(b * 255)
+	r, g, b = floor(r * 255), floor(g * 255), floor(b * 255)
 	return ("\x1b[38;2;%d;%d;%dm"):format(r, g, b)
 end
 

@@ -15,13 +15,13 @@ end
 
 -- Combinator Birds
 
-M    = {{1, 1}}               -- Mockingbird
-S    = {{{{{3, 1}, {2, 1}}}}} -- Starling
-K    = {{2}}                  -- Kestrel
-KI   = {{1}}                  -- Kite
-I    = {1}                    -- Idiot
-O    = {{{1, {2, 1}}}}        -- Owl
-Y    = {{{{2, {1, 1}}}, {{2, {1, 1}}}}}
+M    = {{1, 1}}                         -- Mockingbird IDK
+S    = {{{{{3, 1}, {2, 1}}}}}           -- Starling S combinator
+K    = {{2}}                            -- Kestrel True
+KI   = {{1}}                            -- Kite False
+I    = {1}                              -- Idiot Identity
+O    = {{{1, {2, 1}}}}                  -- Owl HUH?
+Y    = {{{{2, {1, 1}}}, {{2, {1, 1}}}}} -- Y combinator
 
 -- Arithmetic
 
